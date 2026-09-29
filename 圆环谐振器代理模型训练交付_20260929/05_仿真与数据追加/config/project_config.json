@@ -1,0 +1,27 @@
+{
+  "comsol": {
+    "version": "6.3",
+    "batch_exe": "D:\\comsol\\COMSOL63\\Multiphysics\\bin\\win64\\comsolbatch.exe",
+    "compile_exe": "D:\\comsol\\COMSOL63\\Multiphysics\\bin\\win64\\comsolcompile.exe",
+    "study_tag": "std3",
+    "z_um": 0.0,
+    "requested_eigenfrequencies": 10,
+    "inspect_solution_indices": "1-20 when available"
+  },
+  "mode_identification": {
+    "strict_mac_min": 0.9,
+    "same_sign_fraction_min": 0.95,
+    "breathing_uniformity_min": 0.95,
+    "frequency_is_filter": false
+  },
+  "geometry": {
+    "width_min_um": 6.5,
+    "width_max_um": 13.5
+  },
+  "training": {
+    "seed": 20260626,
+    "min_q": 1000000,
+    "default_epochs": 350,
+    "batch_size": 256
+  }
+}

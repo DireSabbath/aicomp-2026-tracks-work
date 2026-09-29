@@ -1,0 +1,10 @@
+{
+  "order": 6,
+  "n_points": 6,
+  "pool_size": 12000,
+  "coverage_fraction": 0.67,
+  "min_normalized_distance": 0.04,
+  "min_predicted_q": 1000000,
+  "seed": 20260929,
+  "strategy_note": "Mixed batch: coverage-majority exploration plus a minority of surrogate-high-Q points."
+}

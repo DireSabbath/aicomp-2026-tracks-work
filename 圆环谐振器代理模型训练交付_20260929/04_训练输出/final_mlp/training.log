@@ -1,0 +1,30 @@
+Loading training CSV files...
+Loaded 21,371 valid rows from 7 files.
+Rows after Q >= 1e+06 filter: 19,320
+Building Fourier-derived geometry features...
+Feature count: 59
+Split sizes: train=12,673, val=2,783, test=3,864. Starting MLP training for at most 350 epochs...
+Epoch 001/350: train_loss=0.173624, val_loss=0.058436
+Epoch 010/350: train_loss=0.035396, val_loss=0.024249
+Epoch 020/350: train_loss=0.024873, val_loss=0.017311
+Epoch 030/350: train_loss=0.021418, val_loss=0.018519
+Epoch 040/350: train_loss=0.018845, val_loss=0.016816
+Epoch 050/350: train_loss=0.016300, val_loss=0.016290
+Epoch 060/350: train_loss=0.016477, val_loss=0.013985
+Epoch 070/350: train_loss=0.014558, val_loss=0.014583
+Epoch 080/350: train_loss=0.013933, val_loss=0.013832
+Epoch 090/350: train_loss=0.014388, val_loss=0.014831
+Epoch 100/350: train_loss=0.013738, val_loss=0.016884
+Epoch 110/350: train_loss=0.012461, val_loss=0.013883
+Epoch 120/350: train_loss=0.011536, val_loss=0.013004
+Epoch 130/350: train_loss=0.011139, val_loss=0.012498
+Epoch 140/350: train_loss=0.011559, val_loss=0.012470
+Epoch 150/350: train_loss=0.010428, val_loss=0.012563
+Epoch 160/350: train_loss=0.011425, val_loss=0.012247
+Epoch 170/350: train_loss=0.010774, val_loss=0.012430
+Epoch 180/350: train_loss=0.010380, val_loss=0.012623
+Epoch 190/350: train_loss=0.011080, val_loss=0.012461
+Epoch 200/350: train_loss=0.010571, val_loss=0.012210
+Early stopping at epoch 209; best val_loss=0.012038
+Training finished. Saving model and evaluating the test split...
+Output directory: D:\Codex\deeplearning\圆环谐振器代理模型训练交付_20260929\04_训练输出\final_mlp
