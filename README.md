@@ -8,4 +8,4 @@
 - `data/attachments/_files/`：创新赛通知与规则汇总 PDF
 - `data/raw/`：上述三页的原始抓取
 
-仓库根目录另有两份微机械谐振器参考文献，供课题使用。
+仓库根目录另有两份微机械谐振器参考文献，供课题使用。按赛题大纲写成的作品方案在 `技术方案.md`，效果表来自 `plan_b_sim/output/effect_table.md`。
