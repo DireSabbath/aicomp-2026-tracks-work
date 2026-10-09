@@ -1,58 +1,86 @@
-"""校赛技术方案必须整段包含日志里的效果表，并守住引用边界。"""
+"""校赛技术方案核对圆环交付包的行数和两套权重误差，并守住引用边界。"""
 
 import unittest
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-REPORT = ROOT / "技术方案.md"
-TABLE = ROOT / "plan_b_sim" / "output" / "effect_table.md"
+from plan_a.render import scan_package
+
+
+ROOT_TITLE = "圆环代理预测频率与品质因数"
+
+
+def _fmt_metrics(summary: dict) -> dict[str, str]:
+    return {
+        "epochs": str(int(summary["epochs_run"])),
+        "n_train": str(int(summary["n_train"])),
+        "n_val": str(int(summary["n_val"])),
+        "n_test": str(int(summary["n_test"])),
+        "logq": f"{float(summary['logQ_MAE']):.5f}",
+        "logq_r2": f"{float(summary['logQ_R2']):.5f}",
+        "q_rel": f"{float(summary['Q_mean_rel_err']) * 100:.2f}%",
+        "q_p90": f"{float(summary['Q_p90_rel_err']) * 100:.2f}%",
+        "freq": f"{float(summary['freq_MAE_MHz']):.5f}",
+        "freq_r2": f"{float(summary['freq_R2']):.5f}",
+    }
 
 
 class ReportTests(unittest.TestCase):
-    def setUp(self):
-        self.report = REPORT.read_text(encoding="utf-8")
-        self.table = TABLE.read_text(encoding="utf-8").strip()
+    @classmethod
+    def setUpClass(cls):
+        from pathlib import Path
 
-    def test_effect_table_is_copied_from_the_log(self):
-        self.assertIn(self.table, self.report)
+        root = Path(__file__).resolve().parents[2]
+        cls.report = (root / "技术方案.md").read_text(encoding="utf-8")
+        cls.data = scan_package()
 
     def test_title_and_abstract_fit_the_submission_limits(self):
-        self.assertIn("片内恒温谐振器三路线对照", self.report)
-        self.assertLessEqual(len("片内恒温谐振器三路线对照"), 20)
-        intro = next(
-            line
-            for line in self.report.splitlines()
-            if line.startswith("问题：")
-        )
+        self.assertIn(ROOT_TITLE, self.report)
+        self.assertLessEqual(len(ROOT_TITLE), 20)
+        intro = next(line for line in self.report.splitlines() if line.startswith("问题："))
         self.assertLessEqual(len(intro), 300)
-        self.assertIn("1361.5168", intro)
-        self.assertIn("162.88", intro)
-        self.assertIn("89", intro)
-
-    def test_closed_form_gap_is_stated(self):
+        default = _fmt_metrics(self.data["default_summary"])
+        retrain = _fmt_metrics(self.data["retrain_summary"])
         for token in (
-            "162.88",
-            "184.26",
-            "191.54",
-            "+73.88",
-            "+72.26",
-            "+53.54",
-            "89 ℃",
-            "112 ℃",
-            "138 ℃",
-            "局部极大",
-            "没有改符号",
+            str(self.data["n_rows"]),
+            str(self.data["n_keep"]),
+            default["logq"],
+            default["freq"],
+            retrain["logq"],
+            retrain["freq"],
+            default["n_test"],
         ):
-            self.assertIn(token, self.report)
+            self.assertIn(token, intro)
 
-    def test_outline_sections_and_reproduction_command(self):
+    def test_outline_quotes_the_package_logs(self):
         for heading in ("（一）", "（二）", "（三）", "（四）", "（五）", "（六）", "（七）", "（八）"):
             self.assertIn(heading, self.report)
-        self.assertIn("python3 -m plan_b_sim", self.report)
+        self.assertIn("python3 -m plan_a.render", self.report)
         self.assertIn("大模型", self.report)
+        self.assertIn(str(self.data["n_rows"]), self.report)
+        self.assertIn(str(self.data["n_keep"]), self.report)
+        self.assertIn(str(self.data["n_drop"]), self.report)
+        self.assertIn(str(self.data["duplicate_rows"]), self.report)
+        self.assertIn(str(self.data["unique_geometries"]), self.report)
+        for item in self.data["files"]:
+            self.assertIn(item["name"], self.report)
+            self.assertIn(str(item["total"]), self.report)
+            self.assertIn(str(item["kept"]), self.report)
+            self.assertIn(str(item["dropped"]), self.report)
+        sources = dict(self.data["sources"])
+        kept_sources = dict(self.data["sources_keep"])
+        self.assertIn(str(sources["high_h_coverage"]), self.report)
+        self.assertIn(str(sources["large_perturb"]), self.report)
+        self.assertIn(str(kept_sources["large_perturb"]), self.report)
+        self.assertIn(f"{min(self.data['freq_all']):.2f}", self.report)
+        self.assertIn(f"{max(self.data['freq_all']):.2f}", self.report)
+        self.assertIn(f"{min(self.data['freq']):.2f}", self.report)
+        for summary in (self.data["default_summary"], self.data["retrain_summary"]):
+            for token in _fmt_metrics(summary).values():
+                self.assertIn(token, self.report)
 
     def test_score_claim_and_identity_boundaries(self):
         self.assertIn("不把这一版写成满分方案或国奖方案", self.report)
+        self.assertIn("plan_b_sim", self.report)
+        self.assertNotIn("python3 -m plan_b_sim", self.report)
         for banned in (
             "武汉",
             "学长",
@@ -62,7 +90,7 @@ class ReportTests(unittest.TestCase):
             "保证满分",
             "±190",
             "190 ppb",
+            "1361.5168",
         ):
             self.assertNotIn(banned, self.report)
-        # 规则要求材料不写这些，正文只作为禁止项出现，不填写具体名称。
         self.assertNotRegex(self.report, r"指导教师[:：]\s*\S+")
